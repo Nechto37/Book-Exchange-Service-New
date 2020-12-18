@@ -15,6 +15,7 @@
         public virtual DbSet<Author> Author { get; set; }
         public virtual DbSet<Book> Book { get; set; }
         public virtual DbSet<Genre> Genre { get; set; }
+        public virtual DbSet<Message> Message { get; set; }
         public virtual DbSet<Settlement> Settlement { get; set; }
         public virtual DbSet<sysdiagrams> sysdiagrams { get; set; }
         public virtual DbSet<User> User { get; set; }
@@ -94,6 +95,18 @@
             modelBuilder.Entity<User>()
                 .Property(e => e.Settlement)
                 .IsUnicode(false);
+
+            modelBuilder.Entity<User>()
+                .HasMany(e => e.SendedMessages)
+                .WithRequired(e => e.Sender)
+                .HasForeignKey(e => e.Receiver_Id)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<User>()
+                .HasMany(e => e.ReceivedMessages)
+                .WithRequired(e => e.Receiver)
+                .HasForeignKey(e => e.Sender_Id)
+                .WillCascadeOnDelete(false);
         }
     }
 }

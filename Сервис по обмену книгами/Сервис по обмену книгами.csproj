@@ -75,6 +75,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\Login.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -86,19 +90,19 @@
     <Compile Include="DAL\Class1.cs" />
     <Compile Include="Help\Base.cs" />
     <Compile Include="Help\RelayCommand.cs" />
+    <Compile Include="Help\StaticLocator.cs" />
     <Compile Include="Models\Author.cs" />
     <Compile Include="Models\Book.cs" />
     <Compile Include="Models\BookExchangeDatabase.cs" />
     <Compile Include="Models\Genre.cs" />
+    <Compile Include="Models\Message.cs" />
     <Compile Include="Models\Settlement.cs" />
     <Compile Include="Models\sysdiagrams.cs" />
     <Compile Include="Models\User.cs" />
-    <Compile Include="_Models\AuthorModel.cs" />
-    <Compile Include="_Models\BookModel.cs" />
-    <Compile Include="_Models\DbOperations.cs" />
-    <Compile Include="_Models\GenreModel.cs" />
-    <Compile Include="_Models\SettlementModel.cs" />
-    <Compile Include="_Models\UserModel.cs" />
+    <Compile Include="ViewModels\LoginViewModel.cs" />
+    <Compile Include="Views\Login.xaml.cs">
+      <DependentUpon>Login.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -123,6 +127,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="App.Config" />
     <None Include="packages.config" />
     <None Include="Properties\DataSources\Author.datasource" />
     <None Include="Properties\DataSources\Book.datasource" />

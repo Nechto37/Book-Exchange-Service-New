@@ -12,6 +12,7 @@
     <Window.Resources>
         <CollectionViewSource x:Key = "Combobox" Source="{Binding SelectedBook.Genre}" />
         <CollectionViewSource x:Key = "Combobox2" Source="{Binding SelectedBook.Author}" />
+      
     </Window.Resources>
     <Window.Background>
         <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -21,7 +22,7 @@
     </Window.Background>
 
     <Viewbox>
-        <Grid Margin="0,0,0,0">
+        <Grid Margin="0,0,0,0" Height="385">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="4*"/>
@@ -32,7 +33,7 @@
                 <RowDefinition Height="4*"/>
             </Grid.RowDefinitions>
             <DockPanel x:Name="Экспэндеры" HorizontalAlignment="Left" Grid.Column="1" Grid.Row="0" LastChildFill="False" VerticalAlignment="Top" >
-                <Label DockPanel.Dock="Top" Content="Приветствуем, гость!"  Grid.Column="1" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Background="Black" Height="48" Width="555" Foreground="#FF46D1CA" FontSize="24" FontWeight="Bold" FontStyle="Italic"/>
+                <Label DockPanel.Dock="Top" Content="{Binding UpperLabel}"  Grid.Column="1" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Background="Black" Height="48" Width="524" Foreground="#FF46D1CA" FontSize="24" FontWeight="Bold" FontStyle="Italic"/>
             </DockPanel>
             <TabControl  Grid.Column="1" HorizontalAlignment="Stretch" Height="auto" Grid.Row="1" VerticalAlignment="Stretch" Width="auto" Margin="0,0,0,0" Grid.RowSpan="2">
                 <TabItem Header="Редактировать свои книги">
@@ -50,7 +51,6 @@
                             <DataGrid AutoGenerateColumns="False" x:Name="BooksGrid" ItemsSource ="{Binding Books}" SelectedItem="{Binding SelectedBook}"  HorizontalAlignment="Stretch"  Width="auto" VerticalAlignment="Stretch" MinWidth="414" Grid.Column="1" Grid.ColumnSpan="2">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Binding="{Binding Book_title}" Header="Название" />
-                                    <DataGridTextColumn Binding="{Binding Book_Id}" Header="ID книги" />
                                     <DataGridTextColumn Binding="{Binding Number_of_pages}" Header="Число страниц" />
                                     <DataGridTextColumn Binding="{Binding Publication_date}" Header="Дата публикации" />
                                     <DataGridComboBoxColumn x:Name="CBGenres" ItemsSource="{Binding Source = {StaticResource Combobox}}" DisplayMemberPath="Genre_name" SelectedValuePath="Genre_name" Header="Жанр"/>
@@ -63,16 +63,26 @@
                                 <Label Content="Название" MinWidth="151" MinHeight="34" Margin="0,5"/>
                                 <TextBox Text="{Binding BookTitleTextBox}" MinHeight="30" TextWrapping="Wrap"  MinWidth="151" Margin="0,5,0,0"/>
                                 <Button Command="{Binding Path=BookSearch}" Content="Поиск" HorizontalAlignment="Left" VerticalAlignment="Top" MinWidth="151" MinHeight="34" Margin="0,10,0,0"/>
+                                <Button Command="{Binding Path=AddBook}" Content="Добавить" MinWidth="151" MinHeight="34" Margin="0,10,0,0"/>
                             </StackPanel>
                         </Grid>
                     </Grid>
                 </TabItem>
                 <TabItem Header="Просмотреть список предложений">
-                    <Viewbox>
+                    
                         <Grid Background="#FFE5E5E5">
-                            <DataGrid HorizontalAlignment="Left" MinHeight="320" VerticalAlignment="Stretch" MinWidth="474"/>
+                     
+                            <DataGrid AutoGenerateColumns="False" x:Name="Offers" ItemsSource ="{Binding CurrentUser.Offers}" SelectedItem="{Binding SelectedBook}"  HorizontalAlignment="Stretch"  Width="auto" VerticalAlignment="Stretch" MinWidth="414" Grid.Column="1" Grid.ColumnSpan="2">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Binding="{Binding Book_title}" Header="Название" />
+                                    <DataGridTextColumn Binding="{Binding Number_of_pages}" Header="Число страниц" />
+                                    <DataGridTextColumn Binding="{Binding Publication_date}" Header="Дата публикации" />
+                                    <DataGridComboBoxColumn x:Name="CBGenres2" ItemsSource="{Binding Source = {StaticResource Combobox}}" DisplayMemberPath="Genre_name" SelectedValuePath="Genre_name" Header="Жанр"/>
+                                    <DataGridComboBoxColumn x:Name="CBAuthors2" ItemsSource="{Binding Source = {StaticResource Combobox2}}" DisplayMemberPath="Surname" SelectedValuePath="Author_Id" Header="Авторы"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
                         </Grid>
-                    </Viewbox>
+                    
                 </TabItem>
                 <TabItem Header="Личные сообщения">
                     <Grid Background="#FFE5E5E5">
@@ -91,7 +101,8 @@
                 <Grid Background="#FFE5E5E5"/>
             </Expander>
             <!--</StackPanel>-->
-            <Button Grid.Column="0" Grid.Row="0" Content="Войти" HorizontalAlignment="Stretch" Margin="0,-10,0,10" VerticalAlignment="Stretch" MinWidth="75"/>
+            <Button Grid.Column="0" Grid.Row="0" Content="{Binding LogIn}" HorizontalAlignment="Stretch" Margin="0,-10,0,10" VerticalAlignment="Stretch" MinWidth="75" Click="Button_Click"/>
+           
 
         </Grid>
     </Viewbox>

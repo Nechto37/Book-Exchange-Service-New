@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Data.Entity;
 using Сервис_по_обмену_книгами.ViewModels;
+using Сервис_по_обмену_книгами.Views;
 using Сервис_по_обмену_книгами.Models;
 
 namespace Сервис_по_обмену_книгами
@@ -25,21 +26,30 @@ namespace Сервис_по_обмену_книгами
 
     public partial class MainWindow : Window
     {
-        //public List<Genre> Genres { get; set; }
-        //public BooksGrid;
+        public MainWindowViewModel mv;
         public MainWindow()
         {
             InitializeComponent();
 
-            DataContext = new MainWindowViewModel();
+            mv = new MainWindowViewModel();
 
-       //BookExchangeDatabase db = new BookExchangeDatabase();
-       //     Genres = db.Genre.ToList();
+            DataContext = mv;
 
-       // CB.ItemsSource = Genres;
-
-       //     int a = 5;
         }
 
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (mv.CurrentUser != null)
+            {
+                mv.CurrentUser = null;
+                mv.UpperLabel = "Вы вошли как: гость";
+                mv.LogIn = "Войти";
+            }
+            else
+            {
+                Login loginwindow = new Login(mv);
+                loginwindow.ShowDialog();
+            }
+        }
     }
 }

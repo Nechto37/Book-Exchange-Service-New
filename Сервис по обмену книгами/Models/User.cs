@@ -12,6 +12,8 @@ namespace Сервис_по_обмену_книгами.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public User()
         {
+            SendedMessages = new HashSet<Message>();
+            ReceivedMessages = new HashSet<Message>();
             Offers = new HashSet<Book>();
             Wishes = new HashSet<Book>();
         }
@@ -44,6 +46,12 @@ namespace Сервис_по_обмену_книгами.Models
         [Required]
         [StringLength(50)]
         public string Settlement { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Message> SendedMessages { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Message> ReceivedMessages { get; set; }
 
         public virtual Settlement SettlementTable { get; set; }
 
