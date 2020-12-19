@@ -8,11 +8,11 @@
         x:Class="Сервис_по_обмену_книгами.MainWindow"
         
         mc:Ignorable="d"
-        Title="MainWindow" Height="435" Width="798.75" MinWidth="200" MinHeight="400">
+        Title="MainWindow" Height="450" Width="802.75" MinWidth="200" MinHeight="400">
     <Window.Resources>
         <CollectionViewSource x:Key = "Combobox" Source="{Binding SelectedBook.Genre}" />
         <CollectionViewSource x:Key = "Combobox2" Source="{Binding SelectedBook.Author}" />
-      
+
     </Window.Resources>
     <Window.Background>
         <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -21,34 +21,39 @@
         </LinearGradientBrush>
     </Window.Background>
 
-    <Viewbox>
-        <Grid Margin="0,0,0,0" Height="385">
+    <Viewbox Margin="0,0,0,0">
+        <Grid Margin="0,0,0,0" Height="390" Width="725">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="4*"/>
+                <ColumnDefinition Width="199*"/>
+                <ColumnDefinition Width="526*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
+                <RowDefinition/>
                 <RowDefinition Height="4*"/>
                 <RowDefinition Height="4*"/>
+                <!--<RowDefinition Height="0*"/>-->
             </Grid.RowDefinitions>
-            <DockPanel x:Name="Экспэндеры" HorizontalAlignment="Left" Grid.Column="1" Grid.Row="0" LastChildFill="False" VerticalAlignment="Top" >
+            <DockPanel x:Name="Экспэндеры" HorizontalAlignment="Left" Grid.Column="1" Grid.Row="0" LastChildFill="False" VerticalAlignment="Top" Height="43" Width="524" >
                 <Label DockPanel.Dock="Top" Content="{Binding UpperLabel}"  Grid.Column="1" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Background="Black" Height="48" Width="524" Foreground="#FF46D1CA" FontSize="24" FontWeight="Bold" FontStyle="Italic"/>
             </DockPanel>
-            <TabControl  Grid.Column="1" HorizontalAlignment="Stretch" Height="auto" Grid.Row="1" VerticalAlignment="Stretch" Width="auto" Margin="0,0,0,0" Grid.RowSpan="2">
-                <TabItem Header="Редактировать свои книги">
+            <TabControl HorizontalAlignment="Stretch" Height="auto" Grid.Row="1" VerticalAlignment="Stretch" Width="auto" Grid.RowSpan="2" Grid.ColumnSpan="2">
+                <TabItem Header="Список книг в базе">
                     <Grid x:Name="Вкладки" Background="#FFE5E5E5" Margin="0,0,0,0">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="137*"/>
                             <RowDefinition Height="171*"/>
                         </Grid.RowDefinitions>
                         <Grid x:Name="Вкладка1" HorizontalAlignment="Stretch" Height="auto" VerticalAlignment="Stretch" Width="auto" Grid.RowSpan="2">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="59*"/>
+                                <RowDefinition Height="95*"/>
+                            </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="19*"/>
                                 <ColumnDefinition Width="31*"/>
                                 <ColumnDefinition Width="20*"/>
                             </Grid.ColumnDefinitions>
-                            <DataGrid AutoGenerateColumns="False" x:Name="BooksGrid" ItemsSource ="{Binding Books}" SelectedItem="{Binding SelectedBook}"  HorizontalAlignment="Stretch"  Width="auto" VerticalAlignment="Stretch" MinWidth="414" Grid.Column="1" Grid.ColumnSpan="2">
+                            <DataGrid AutoGenerateColumns="False" x:Name="BooksGrid" ItemsSource ="{Binding Books}" SelectedItem="{Binding SelectedBook}"  HorizontalAlignment="Stretch"  Width="auto" VerticalAlignment="Stretch" MinWidth="400" Grid.Column="1" Grid.ColumnSpan="2" Grid.RowSpan="2">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Binding="{Binding Book_title}" Header="Название" />
                                     <DataGridTextColumn Binding="{Binding Number_of_pages}" Header="Число страниц" />
@@ -57,32 +62,87 @@
                                     <DataGridComboBoxColumn x:Name="CBAuthors" ItemsSource="{Binding Source = {StaticResource Combobox2}}" DisplayMemberPath="Surname" SelectedValuePath="Author_Id" Header="Авторы"/>
                                 </DataGrid.Columns>
                             </DataGrid>
-                            <StackPanel HorizontalAlignment="Stretch" Width="auto" Height="auto" MinHeight="231" Margin="10,10,10,0" VerticalAlignment="Stretch" MinWidth="151">
+                            <StackPanel HorizontalAlignment="Stretch" Width="auto" Height="auto" MinHeight="231" Margin="10,10,3,0" VerticalAlignment="Stretch" MinWidth="151" Grid.RowSpan="2">
                                 <Label  Content="Автор" MinWidth="151" MinHeight="34" Margin="0,0,0,5"/>
                                 <TextBox Text="{Binding AuthorTextBox}"  MinHeight="30" TextWrapping="Wrap"  MinWidth="151"  Margin="0,5,0,0"/>
                                 <Label Content="Название" MinWidth="151" MinHeight="34" Margin="0,5"/>
-                                <TextBox Text="{Binding BookTitleTextBox}" MinHeight="30" TextWrapping="Wrap"  MinWidth="151" Margin="0,5,0,0"/>
-                                <Button Command="{Binding Path=BookSearch}" Content="Поиск" HorizontalAlignment="Left" VerticalAlignment="Top" MinWidth="151" MinHeight="34" Margin="0,10,0,0"/>
-                                <Button Command="{Binding Path=AddBook}" Content="Добавить" MinWidth="151" MinHeight="34" Margin="0,10,0,0"/>
+                                <TextBox Text="{Binding BookTitleTextBox}" MinHeight="30" TextWrapping="Wrap"  MinWidth="151" Margin="0"/>
+                                <Button Command="{Binding BookSearch}" Content="Поиск" HorizontalAlignment="Stretch" VerticalAlignment="Top" MinWidth="151" MinHeight="34" Margin="0,5,0,0"/>
+                                <Button Command="{Binding AddBookWishes}" Content="Добавить в пожелания" MinWidth="151" MinHeight="34" Margin="0,5,0,0"/>
+                                <Button Command="{Binding AddBookOffers}" Content="Добавить в предложения" MinWidth="151" MinHeight="34" Margin="0,5"/>
                             </StackPanel>
                         </Grid>
                     </Grid>
                 </TabItem>
-                <TabItem Header="Просмотреть список предложений">
-                    
-                        <Grid Background="#FFE5E5E5">
-                     
-                            <DataGrid AutoGenerateColumns="False" x:Name="Offers" ItemsSource ="{Binding CurrentUser.Offers}" SelectedItem="{Binding SelectedBook}"  HorizontalAlignment="Stretch"  Width="auto" VerticalAlignment="Stretch" MinWidth="414" Grid.Column="1" Grid.ColumnSpan="2">
-                                <DataGrid.Columns>
-                                    <DataGridTextColumn Binding="{Binding Book_title}" Header="Название" />
-                                    <DataGridTextColumn Binding="{Binding Number_of_pages}" Header="Число страниц" />
-                                    <DataGridTextColumn Binding="{Binding Publication_date}" Header="Дата публикации" />
-                                    <DataGridComboBoxColumn x:Name="CBGenres2" ItemsSource="{Binding Source = {StaticResource Combobox}}" DisplayMemberPath="Genre_name" SelectedValuePath="Genre_name" Header="Жанр"/>
-                                    <DataGridComboBoxColumn x:Name="CBAuthors2" ItemsSource="{Binding Source = {StaticResource Combobox2}}" DisplayMemberPath="Surname" SelectedValuePath="Author_Id" Header="Авторы"/>
-                                </DataGrid.Columns>
-                            </DataGrid>
-                        </Grid>
-                    
+                <TabItem Header="Мои пожелания">
+
+                    <Grid x:Name="Вкладка2" Background="#FFE5E5E5" HorizontalAlignment="Stretch" Height="auto" VerticalAlignment="Stretch" Width="auto" Grid.RowSpan="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="19*"/>
+                            <ColumnDefinition Width="51*"/>
+                        </Grid.ColumnDefinitions>
+                        <DataGrid AutoGenerateColumns="False" x:Name="Wishes" ItemsSource ="{Binding Wishes}" SelectedItem="{Binding SelectedBook}" IsReadOnly="true"   Width="auto" VerticalAlignment="Stretch" MinWidth="414" Margin="0,0,0,0" Grid.Column="1">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Binding="{Binding Book_title}" Header="Название" />
+                                <DataGridTextColumn Binding="{Binding Number_of_pages}" Header="Число страниц" />
+                                <DataGridTextColumn Binding="{Binding Publication_date}" Header="Дата публикации" />
+                                <DataGridComboBoxColumn x:Name="CBGenres2" ItemsSource="{Binding Source = {StaticResource Combobox}}" DisplayMemberPath="Genre_name" SelectedValuePath="Genre_name" Header="Жанр"/>
+                                <DataGridComboBoxColumn x:Name="CBAuthors2" ItemsSource="{Binding Source = {StaticResource Combobox2}}" DisplayMemberPath="Surname" SelectedValuePath="Author_Id" Header="Авторы"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <StackPanel HorizontalAlignment="Left" Height="296" VerticalAlignment="Top" Width="194">
+                            <Button Command="{Binding DeleteWish}" Content="Убрать из списка" HorizontalAlignment="Stretch" VerticalAlignment="Top" MinWidth="151" MinHeight="34"/>
+                        </StackPanel>
+
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Мои предложения">
+
+                    <Grid x:Name="Вкладка3" Background="#FFE5E5E5" HorizontalAlignment="Stretch" Height="auto" VerticalAlignment="Stretch" Width="auto" Grid.RowSpan="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="19*"/>
+                            <ColumnDefinition Width="51*"/>
+                        </Grid.ColumnDefinitions>
+                        <DataGrid AutoGenerateColumns="False" x:Name="Offers" ItemsSource ="{Binding Offers}" SelectedItem="{Binding SelectedBook}" IsReadOnly="true"   Width="auto" VerticalAlignment="Stretch" MinWidth="414" Margin="0,0,0,0" Grid.Column="1">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Binding="{Binding Book_title}" Header="Название" />
+                                <DataGridTextColumn Binding="{Binding Number_of_pages}" Header="Число страниц" />
+                                <DataGridTextColumn Binding="{Binding Publication_date}" Header="Дата публикации" />
+                                <DataGridComboBoxColumn x:Name="CBGenres3" ItemsSource="{Binding Source = {StaticResource Combobox}}" DisplayMemberPath="Genre_name" SelectedValuePath="Genre_name" Header="Жанр"/>
+                                <DataGridComboBoxColumn x:Name="CBAuthors3" ItemsSource="{Binding Source = {StaticResource Combobox2}}" DisplayMemberPath="Surname" SelectedValuePath="Author_Id" Header="Авторы"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <StackPanel HorizontalAlignment="Left" Height="296" VerticalAlignment="Top" Width="194">
+                            <Button Command="{Binding DeleteOffer}" Content="Убрать из списка" HorizontalAlignment="Stretch" VerticalAlignment="Top" MinWidth="151" MinHeight="34"/>
+                        </StackPanel>
+
+                    </Grid>
+
+                </TabItem>
+                <TabItem Header="Интересные предложения">
+
+                    <Grid x:Name="Вкладка4" Background="#FFE5E5E5" HorizontalAlignment="Stretch" Height="auto" VerticalAlignment="Stretch" Width="auto" Grid.RowSpan="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="19*"/>
+                            <ColumnDefinition Width="51*"/>
+                        </Grid.ColumnDefinitions>
+                        <DataGrid AutoGenerateColumns="False" x:Name="Automatic" ItemsSource ="{Binding uh}"  IsReadOnly="true"   Width="auto" VerticalAlignment="Stretch" MinWidth="414" Margin="0,0,0,0" Grid.Column="1">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Binding="{Binding user.Login}" Header="Пользователь" />
+                                <DataGridTextColumn Binding="{Binding status}" Header="Статус" />
+                                <DataGridTextColumn Binding="{Binding book.Book_title}" Header="Название" />
+                                <DataGridTextColumn Binding="{Binding book.Number_of_pages}" Header="Число страниц" />
+                                <DataGridTextColumn Binding="{Binding book.Publication_date}" Header="Дата публикации" />
+                                <DataGridComboBoxColumn x:Name="CBGenres4" ItemsSource="{Binding Source = {StaticResource Combobox}}" DisplayMemberPath="Genre_name" SelectedValuePath="Genre_name" Header="Жанр"/>
+                                <DataGridComboBoxColumn x:Name="CBAuthors4" ItemsSource="{Binding Source = {StaticResource Combobox2}}" DisplayMemberPath="Surname" SelectedValuePath="Author_Id" Header="Авторы"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <StackPanel HorizontalAlignment="Left" Height="296" VerticalAlignment="Top" Width="194">
+                            <Button Command="{Binding DeleteOffer}" Content="Убрать из списка" HorizontalAlignment="Stretch" VerticalAlignment="Top" MinWidth="151" MinHeight="34"/>
+                        </StackPanel>
+
+                    </Grid>
+
                 </TabItem>
                 <TabItem Header="Личные сообщения">
                     <Grid Background="#FFE5E5E5">
@@ -94,15 +154,9 @@
 
 
             <!--<StackPanel Grid.ColumnSpan="2" HorizontalAlignment="Left" MinHeight="361" Margin="0,0,0,0" Grid.Row="1" VerticalAlignment="Top" MinWidth="166" Grid.RowSpan="2">-->
-            <Expander Header="Мои пожелания" HorizontalAlignment="Stretch" MinHeight="100" Margin="10,10,10,10" Grid.Row="1" MinWidth="136" Foreground="#FF46D1CA">
-                <Grid Background="#FFE5E5E5"/>
-            </Expander>
-            <Expander Header="История обменов" HorizontalAlignment="Stretch" MinHeight="100" Margin="10,10,10,10" Grid.Row="2" MinWidth="136" Foreground="#FF46D1CA">
-                <Grid Background="#FFE5E5E5"/>
-            </Expander>
             <!--</StackPanel>-->
-            <Button Grid.Column="0" Grid.Row="0" Content="{Binding LogIn}" HorizontalAlignment="Stretch" Margin="0,-10,0,10" VerticalAlignment="Stretch" MinWidth="75" Click="Button_Click"/>
-           
+            <Button Grid.Column="0" Grid.Row="0" Content="{Binding LogIn}" HorizontalAlignment="Stretch" Margin="0" VerticalAlignment="Stretch" MinWidth="75" Click="Button_Click"/>
+
 
         </Grid>
     </Viewbox>

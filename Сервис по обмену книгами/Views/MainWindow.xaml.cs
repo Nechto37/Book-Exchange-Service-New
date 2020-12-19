@@ -44,6 +44,8 @@ namespace Сервис_по_обмену_книгами
                 mv.CurrentUser = null;
                 mv.UpperLabel = "Вы вошли как: гость";
                 mv.LogIn = "Войти";
+                mv.Wishes = null;
+                mv.Offers = null;
             }
             else
             {

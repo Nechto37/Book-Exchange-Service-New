@@ -14,14 +14,24 @@ using System.Windows;
 
 namespace Сервис_по_обмену_книгами.ViewModels
 {
-   public class MainWindowViewModel : Base
+    public class MainWindowViewModel : Base
     {
+
+        public MainWindowViewModel()
+        {
+            db = new BookExchangeDatabase();
+            Books = new ObservableCollection<Book>(db.Book);
+            Authors = new ObservableCollection<Author>(db.Author);
+            Genres = new ObservableCollection<Genre>(db.Genre);
+            Users = new ObservableCollection<User>(db.User);
+            uh = new ObservableCollection<UserHelp>();
+        }
         /*static */
         private BookExchangeDatabase db /*= new BookExchangeDatabase()*/;
         // Book SelectedBook = new Book();
-        private List<Book> books { get; set; }
+        private ObservableCollection<Book> books { get; set; }
 
-        public List<Book> Books
+        public ObservableCollection<Book> Books
         {
             get { return books; }
             set
@@ -31,9 +41,18 @@ namespace Сервис_по_обмену_книгами.ViewModels
             }
         }
 
-        public List<Author> Authors { get; set; }
+        public class UserHelp
+        {
+            public User user;
+            public Book book;
+            public string status;
+        }
 
-        public List<Genre> Genres { get; set; }
+        public ObservableCollection<UserHelp> uh;
+
+        public ObservableCollection<Author> Authors { get; set; }
+
+        public ObservableCollection<Genre> Genres { get; set; }
 
         //public List<Genre> CurrentGenres { get; set; }
 
@@ -104,6 +123,42 @@ namespace Сервис_по_обмену_книгами.ViewModels
             }
         }
 
+        private ObservableCollection<Book> offers { get; set; }
+
+        public ObservableCollection<Book> Offers
+        {
+            get { return offers; }
+            set
+            {
+                offers = value;
+                OnPropertyChanged("Offers");
+            }
+        }
+
+        private ObservableCollection<User> users { get; set; }
+
+        public ObservableCollection<User> Users
+        {
+            get { return users; }
+            set
+            {
+                users = value;
+                OnPropertyChanged("Users");
+            }
+        }
+
+        private ObservableCollection<Book> wishes { get; set; }
+
+        public ObservableCollection<Book> Wishes
+        {
+            get { return wishes; }
+            set
+            {
+                wishes = value;
+                OnPropertyChanged("Wishes");
+            }
+        }
+
         private User currentUser;
         public User CurrentUser
         {
@@ -111,10 +166,13 @@ namespace Сервис_по_обмену_книгами.ViewModels
             set
             {
                 currentUser = value;
+                Filling(CurrentUser);
                 if (currentUser != null)
                 {
                     LogIn = "Выйти";
                     UpperLabel = "Вы вошли как:" + currentUser.Login;
+                    Wishes = new ObservableCollection<Book>(value.Wishes);
+                    Offers = new ObservableCollection<Book>(value.Offers);
                 }
                 OnPropertyChanged("CurrentUser");
             }
@@ -134,26 +192,60 @@ namespace Сервис_по_обмену_книгами.ViewModels
         //    set { selectedGenre_Name = value; OnPropertyChanged("SelectedGenre_Name"); }
         //}
 
-        public MainWindowViewModel()
-        {
-            db = new BookExchangeDatabase();
-            Books = db.Book.ToList();
-            Authors = db.Author.ToList();
-            Genres = db.Genre.ToList();
-            //CurrentGenres = null;
-        }
+   
 
-        public List<Book> SearchBook(string author, string bookTitle)
+        public ObservableCollection<Book> SearchBook(string author, string bookTitle)
         {
-            List<Book> buf = new List<Book>();
-            buf = db.Book.ToList();
-            List<Book> answer = new List<Book>();
+            ObservableCollection<Book> buf = new ObservableCollection<Book>();
+            buf = db.Book.Local;
+            ObservableCollection<Book> answer = new ObservableCollection<Book>();
             foreach(Book b in buf)
             {
                 if (/*b.Author.ToString() == author && */b.Book_title == bookTitle)
                     answer.Add(b);
             }
             return answer;
+        }
+
+        public void Filling(User user)
+        {
+            if(user == null) { uh = null; return; }
+            foreach(Book b in user.Offers)
+            {
+                foreach(User u in Users)
+                {
+                    if (u.Id == user.Id) continue;
+                    foreach(Book book in u.Wishes)
+                    {
+                        if(book.Book_Id == b.Book_Id)
+                        {
+                            UserHelp userHelp = new UserHelp();
+                            userHelp.user = u;
+                            userHelp.book = book;
+                            userHelp.status = "Нужна мне";
+                            uh.Add(userHelp);
+                        }
+                    }
+                }
+            }
+            foreach (Book b in user.Wishes)
+            {
+                foreach (User u in Users)
+                {
+                    if (u.Id == user.Id) continue;
+                    foreach (Book book in u.Offers)
+                    {
+                        if (book.Book_Id == b.Book_Id)
+                        {
+                            UserHelp userHelp = new UserHelp();
+                            userHelp.user = u;
+                            userHelp.book = book;
+                            userHelp.status = "Готов обменять";
+                            uh.Add(userHelp);
+                        }
+                    }
+                }
+            }
         }
 
         private RelayCommand bookSearch;
@@ -173,20 +265,86 @@ namespace Сервис_по_обмену_книгами.ViewModels
             }
         }
 
-        private RelayCommand addBook;
+        private RelayCommand addBookOffers;
 
-        public RelayCommand AddBook
+        public RelayCommand AddBookOffers
         {
             get
             {
-                return addBook ??
-                  (addBook = new RelayCommand(obj =>
+                return addBookOffers ??
+                  (addBookOffers = new RelayCommand(obj =>
                   {
                       foreach(Book b in db.User.Find(CurrentUser.Id).Offers)
                           if(b.Book_Id == SelectedBook.Book_Id) { MessageBox.Show("В списке уже имеется данная книга."); return; }
                       db.User.Find(CurrentUser.Id).Offers.Add(SelectedBook);
                       db.SaveChanges();
-                      //eve.AllEvents = eve.AllEvents;
+                      Offers = new ObservableCollection<Book>(db.User.Find(CurrentUser.Id).Offers);
+                      MessageBox.Show("Книга " + SelectedBook.Book_title + " успешно добавлена в список предложений.");
+                  },
+
+                 //условие, при котором будет доступна команда
+                 (obj) => ((CurrentUser != null && SelectedBook != null))));
+            }
+        }
+
+        private RelayCommand addBookWishes;
+
+        public RelayCommand AddBookWishes
+        {
+            get
+            {
+                return addBookWishes ??
+                  (addBookWishes = new RelayCommand(obj =>
+                  {
+                      foreach (Book b in db.User.Find(CurrentUser.Id).Wishes)
+                          if (b.Book_Id == SelectedBook.Book_Id) { MessageBox.Show("В списке уже имеется данная книга."); return; }
+                      db.User.Find(CurrentUser.Id).Wishes.Add(SelectedBook);
+                      db.SaveChanges();
+                      Wishes = new ObservableCollection<Book>(db.User.Find(CurrentUser.Id).Wishes);
+                      MessageBox.Show("Книга " + SelectedBook.Book_title + " успешно добавлена в список пожеланий.");
+                  },
+
+                 //условие, при котором будет доступна команда
+                 (obj) => ((CurrentUser != null && SelectedBook != null))));
+            }
+        }
+
+
+        private RelayCommand deleteWish;
+
+        public RelayCommand DeleteWish
+        {
+            get
+            {
+                return deleteWish ??
+                  (deleteWish = new RelayCommand(obj =>
+                  {
+                      string title = SelectedBook.Book_title;
+                      db.User.Find(CurrentUser.Id).Wishes.Remove(SelectedBook);
+                      db.SaveChanges();
+                      Wishes = new ObservableCollection<Book>(db.User.Find(CurrentUser.Id).Wishes);
+                      MessageBox.Show("Книга " + title + " успешно удалена из списка пожеланий.");
+                  },
+
+                 //условие, при котором будет доступна команда
+                 (obj) => ((CurrentUser != null && SelectedBook != null))));
+            }
+        }
+
+        private RelayCommand deleteOffer;
+
+        public RelayCommand DeleteOffer
+        {
+            get
+            {
+                return deleteOffer ??
+                  (deleteOffer = new RelayCommand(obj =>
+                  {
+                      string title = SelectedBook.Book_title;
+                      db.User.Find(CurrentUser.Id).Offers.Remove(SelectedBook);
+                      db.SaveChanges();
+                      Offers = new ObservableCollection<Book>(db.User.Find(CurrentUser.Id).Offers);
+                      MessageBox.Show("Книга " + title + " успешно удалена из списка предложений.");
                   },
 
                  //условие, при котором будет доступна команда
