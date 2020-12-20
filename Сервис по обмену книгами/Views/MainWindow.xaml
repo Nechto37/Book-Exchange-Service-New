@@ -28,15 +28,15 @@
                 <ColumnDefinition Width="526*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition/>
-                <RowDefinition Height="4*"/>
-                <RowDefinition Height="4*"/>
+                <RowDefinition Height="43*"/>
+                <RowDefinition Height="342*"/>
+                <RowDefinition Height="5*"/>
                 <!--<RowDefinition Height="0*"/>-->
             </Grid.RowDefinitions>
             <DockPanel x:Name="Экспэндеры" HorizontalAlignment="Left" Grid.Column="1" Grid.Row="0" LastChildFill="False" VerticalAlignment="Top" Height="43" Width="524" >
                 <Label DockPanel.Dock="Top" Content="{Binding UpperLabel}"  Grid.Column="1" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Background="Black" Height="48" Width="524" Foreground="#FF46D1CA" FontSize="24" FontWeight="Bold" FontStyle="Italic"/>
             </DockPanel>
-            <TabControl HorizontalAlignment="Stretch" Height="auto" Grid.Row="1" VerticalAlignment="Stretch" Width="auto" Grid.RowSpan="2" Grid.ColumnSpan="2">
+            <TabControl HorizontalAlignment="Stretch" Height="auto" Grid.Row="1" VerticalAlignment="Stretch" Width="auto" Grid.ColumnSpan="2">
                 <TabItem Header="Список книг в базе">
                     <Grid x:Name="Вкладки" Background="#FFE5E5E5" Margin="0,0,0,0">
                         <Grid.RowDefinitions>
@@ -74,7 +74,7 @@
                         </Grid>
                     </Grid>
                 </TabItem>
-                <TabItem Header="Мои пожелания">
+                <TabItem Header="Мои пожелания" IsEnabled="{Binding Flag}">
 
                     <Grid x:Name="Вкладка2" Background="#FFE5E5E5" HorizontalAlignment="Stretch" Height="auto" VerticalAlignment="Stretch" Width="auto" Grid.RowSpan="2">
                         <Grid.ColumnDefinitions>
@@ -96,7 +96,7 @@
 
                     </Grid>
                 </TabItem>
-                <TabItem Header="Мои предложения">
+                <TabItem Header="Мои предложения" IsEnabled="{Binding Flag}">
 
                     <Grid x:Name="Вкладка3" Background="#FFE5E5E5" HorizontalAlignment="Stretch" Height="auto" VerticalAlignment="Stretch" Width="auto" Grid.RowSpan="2">
                         <Grid.ColumnDefinitions>
@@ -119,32 +119,44 @@
                     </Grid>
 
                 </TabItem>
-                <TabItem Header="Интересные предложения">
+                <TabItem Header="Интересные предложения" IsEnabled="{Binding Flag}">
 
                     <Grid x:Name="Вкладка4" Background="#FFE5E5E5" HorizontalAlignment="Stretch" Height="auto" VerticalAlignment="Stretch" Width="auto" Grid.RowSpan="2">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="19*"/>
                             <ColumnDefinition Width="51*"/>
                         </Grid.ColumnDefinitions>
-                        <DataGrid AutoGenerateColumns="False" x:Name="Automatic" ItemsSource ="{Binding uh}"  IsReadOnly="true"   Width="auto" VerticalAlignment="Stretch" MinWidth="414" Margin="0,0,0,0" Grid.Column="1">
+                        <DataGrid AutoGenerateColumns="False" x:Name="Automatic" ItemsSource ="{Binding Uh}" SelectedItem="{Binding SelectedLine}" IsReadOnly="true"   Width="auto" VerticalAlignment="Stretch" MinWidth="414" Margin="0,0,0,0" Grid.Column="1" AutomationProperties.HelpText="Вы видите предложения, которые вам могут показаться интересными">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Binding="{Binding user.Login}" Header="Пользователь" />
-                                <DataGridTextColumn Binding="{Binding status}" Header="Статус" />
-                                <DataGridTextColumn Binding="{Binding book.Book_title}" Header="Название" />
-                                <DataGridTextColumn Binding="{Binding book.Number_of_pages}" Header="Число страниц" />
-                                <DataGridTextColumn Binding="{Binding book.Publication_date}" Header="Дата публикации" />
+                                <DataGridTextColumn Binding="{Binding User.Login}" Header="Пользователь" />
+                                <DataGridTextColumn Binding="{Binding User.Settlement}" Header="Населённый пункт" />
+                                <DataGridTextColumn Binding="{Binding User.C_name}" Header="Имя" />
+                                <DataGridTextColumn Binding="{Binding User.Surname}" Header="Фамилия" />
+                                <DataGridTextColumn Binding="{Binding Book.Book_title}" Header="Название книги" />
+                                <DataGridTextColumn Binding="{Binding Status}" Header="Статус" />
                                 <DataGridComboBoxColumn x:Name="CBGenres4" ItemsSource="{Binding Source = {StaticResource Combobox}}" DisplayMemberPath="Genre_name" SelectedValuePath="Genre_name" Header="Жанр"/>
                                 <DataGridComboBoxColumn x:Name="CBAuthors4" ItemsSource="{Binding Source = {StaticResource Combobox2}}" DisplayMemberPath="Surname" SelectedValuePath="Author_Id" Header="Авторы"/>
                             </DataGrid.Columns>
                         </DataGrid>
-                        <StackPanel HorizontalAlignment="Left" Height="296" VerticalAlignment="Top" Width="194">
-                            <Button Command="{Binding DeleteOffer}" Content="Убрать из списка" HorizontalAlignment="Stretch" VerticalAlignment="Top" MinWidth="151" MinHeight="34"/>
+                        <StackPanel HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" >
+                            <Button Command="{Binding WriteMessage}" Content="Написать сообщение" HorizontalAlignment="Stretch" VerticalAlignment="Top" MinWidth="151" MinHeight="34" AutomationProperties.HelpText="Кнопка для открытия набора сообщения с выбранным пользователем"/>
+                            <Expander Header=" Текст сообщения" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" Height="227" Foreground="#FF515D42" IsEnabled="{Binding ForExpander}" IsExpanded="{Binding IsExp}" AutomationProperties.HelpText="В текстовом поле можно ввести текст сообщения">
+                                <RichTextBox HorizontalAlignment="Stretch" Height="227" VerticalAlignment="Stretch" >
+                                    <FlowDocument>
+                                        <Paragraph>
+                                            <Run Text="{Binding Message, Mode=TwoWay}"/>
+                                        </Paragraph>
+                                    </FlowDocument>
+                                </RichTextBox>
+                            </Expander>
+                            <Button Content="Отправить сообщение" Command ="{Binding SendMessage}" Visibility="{Binding SendMessageVisibility}" HorizontalAlignment="Stretch" VerticalAlignment="Top" MinWidth="151" MinHeight="34" AutomationProperties.HelpText="Кнопка для отправки сообщения"/>
+
                         </StackPanel>
 
                     </Grid>
 
                 </TabItem>
-                <TabItem Header="Личные сообщения">
+                <TabItem Header="Личные сообщения" IsEnabled="{Binding Flag}">
                     <Grid Background="#FFE5E5E5">
                         <ComboBox ItemsSource="{Binding Path=CurrentGenres}" DisplayMemberPath="Genre_name" SelectedValuePath="Genre_name"  Width="120"/>
                         <Label Content="{Binding SelectedBook.Book_title}" HorizontalAlignment="Left" Margin="118,31,0,0" VerticalAlignment="Top"/>

@@ -24,13 +24,10 @@ namespace Сервис_по_обмену_книгами.ViewModels
             Authors = new ObservableCollection<Author>(db.Author);
             Genres = new ObservableCollection<Genre>(db.Genre);
             Users = new ObservableCollection<User>(db.User);
-            uh = new ObservableCollection<UserHelp>();
         }
-        /*static */
-        private BookExchangeDatabase db /*= new BookExchangeDatabase()*/;
-        // Book SelectedBook = new Book();
-        private ObservableCollection<Book> books { get; set; }
 
+        private BookExchangeDatabase db;
+        private ObservableCollection<Book> books { get; set; }
         public ObservableCollection<Book> Books
         {
             get { return books; }
@@ -41,14 +38,65 @@ namespace Сервис_по_обмену_книгами.ViewModels
             }
         }
 
-        public class UserHelp
+        public class UserHelp: Base
         {
-            public User user;
-            public Book book;
-            public string status;
+            private User user { get; set; }
+            public User User
+            {
+                get { return user; }
+                set
+                {
+                    user = value;
+                    OnPropertyChanged("User");
+                }
+            }
+
+            private Book book { get; set; }
+            public Book Book
+            {
+                get { return book; }
+                set
+                {
+                    book = value;
+                    OnPropertyChanged("Book");
+                }
+            }
+
+            private string status { get; set; }
+            public string Status
+            {
+                get { return status; }
+                set
+                {
+                    status = value;
+                    OnPropertyChanged("Status");
+                }
+            }
         }
 
-        public ObservableCollection<UserHelp> uh;
+        private ObservableCollection<UserHelp> uh { get; set; }
+
+        public ObservableCollection<UserHelp> Uh
+        {
+            get { return uh; }
+            set
+            {
+                uh = value;
+                OnPropertyChanged("Uh");
+            }
+        }
+
+        private UserHelp selectedLine { get; set; }
+
+        public UserHelp SelectedLine
+        {
+            get { return selectedLine; }
+            set
+            {
+                selectedLine = value;
+                OnPropertyChanged("SelectedLine");
+            }
+        }
 
         public ObservableCollection<Author> Authors { get; set; }
 
@@ -114,12 +162,57 @@ namespace Сервис_по_обмену_книгами.ViewModels
             }
         }
 
+        private Visibility sendMessageVisibility = Visibility.Collapsed;
+        public Visibility SendMessageVisibility
+        {
+            get { return sendMessageVisibility; }
+            set
+            {
+                sendMessageVisibility = value;
+                OnPropertyChanged("SendMessageVisibility");
+            }
+        }
+
+        private bool isExp = false;
+        public bool IsExp
+        {
+            get { return isExp; }
+            set
+            {
+                isExp = value;
+                OnPropertyChanged("IsExp");
+            }
+        }
+
         private Book selectedBook = null;
         public Book SelectedBook
         {
             get { return selectedBook; }
             set { selectedBook = value;
                 OnPropertyChanged("SelectedBook");
+            }
+        }
+
+        private string message = null;
+        public string Message
+        {
+            get { return message; }
+            set
+            {
+                message = value;
+                OnPropertyChanged("Message");
+            }
+        }
+
+        private bool forExpander = false;
+
+        public bool ForExpander
+        {
+            get { return forExpander; }
+            set
+            {
+                forExpander = value;
+                OnPropertyChanged("ForExpander");
             }
         }
 
@@ -166,7 +259,8 @@ namespace Сервис_по_обмену_книгами.ViewModels
             set
             {
                 currentUser = value;
-                Filling(CurrentUser);
+                Flag = !Flag;
+               Uh = Filling(CurrentUser);
                 if (currentUser != null)
                 {
                     LogIn = "Выйти";
@@ -178,21 +272,18 @@ namespace Сервис_по_обмену_книгами.ViewModels
             }
         }
 
-        //private int selectedAuthor_ID = 1;
-        //public int SelectedAuthor_ID
-        //{
-        //    get { return selectedAuthor_ID; }
-        //    set { selectedAuthor_ID = value; OnPropertyChanged("SelectedAuthor_ID"); }
-        //}
 
-        //private string selectedGenre_Name = "nothing";
-        //public string SelectedGenre_Name
-        //{
-        //    get { return selectedGenre_Name; }
-        //    set { selectedGenre_Name = value; OnPropertyChanged("SelectedGenre_Name"); }
-        //}
+        private bool flag { get; set; }
 
-   
+        public bool Flag
+        {
+            get { return flag; }
+            set
+            {
+                flag = value;
+                OnPropertyChanged("Flag");
+            }
+        }
 
         public ObservableCollection<Book> SearchBook(string author, string bookTitle)
         {
@@ -207,10 +298,11 @@ namespace Сервис_по_обмену_книгами.ViewModels
             return answer;
         }
 
-        public void Filling(User user)
+        public ObservableCollection<UserHelp> Filling(User user)
         {
-            if(user == null) { uh = null; return; }
-            foreach(Book b in user.Offers)
+            if(user == null) { Uh = null; return null; }
+            else uh = new ObservableCollection<UserHelp>();
+            foreach (Book b in user.Offers)
             {
                 foreach(User u in Users)
                 {
@@ -220,10 +312,10 @@ namespace Сервис_по_обмену_книгами.ViewModels
                         if(book.Book_Id == b.Book_Id)
                         {
                             UserHelp userHelp = new UserHelp();
-                            userHelp.user = u;
-                            userHelp.book = book;
-                            userHelp.status = "Нужна мне";
-                            uh.Add(userHelp);
+                            userHelp.User = u;
+                            userHelp.Book = book;
+                            userHelp.Status = "Нужна мне";
+                            Uh.Add(userHelp);
                         }
                     }
                 }
@@ -238,14 +330,15 @@ namespace Сервис_по_обмену_книгами.ViewModels
                         if (book.Book_Id == b.Book_Id)
                         {
                             UserHelp userHelp = new UserHelp();
-                            userHelp.user = u;
-                            userHelp.book = book;
-                            userHelp.status = "Готов обменять";
+                            userHelp.User = u;
+                            userHelp.Book = book;
+                            userHelp.Status = "Готов обменять";
                             uh.Add(userHelp);
                         }
                     }
                 }
             }
+            return uh;
         }
 
         private RelayCommand bookSearch;
@@ -349,6 +442,53 @@ namespace Сервис_по_обмену_книгами.ViewModels
 
                  //условие, при котором будет доступна команда
                  (obj) => ((CurrentUser != null && SelectedBook != null))));
+            }
+        }
+
+        private RelayCommand writeMessage;
+
+        public RelayCommand WriteMessage
+        {
+            get
+            {
+                return writeMessage ??
+                  (writeMessage = new RelayCommand(obj =>
+                  {
+                      ForExpander = true;
+                      SendMessageVisibility = Visibility.Visible;
+                      IsExp = true;
+                  },
+
+                 //условие, при котором будет доступна команда
+                 (obj) => ((SelectedLine != null && CurrentUser != null))));
+            }
+        }
+
+        private RelayCommand sendMessage;
+
+        public RelayCommand SendMessage
+        {
+            get
+            {
+                return sendMessage ??
+                  (sendMessage = new RelayCommand(obj =>
+                  {
+                      Message outcoming = new Message();
+                      outcoming.Sender_Id = CurrentUser.Id;
+                      outcoming.Receiver_Id = SelectedLine.User.Id;
+                      outcoming.Text = Message;
+                      outcoming.Sender = CurrentUser;
+                      outcoming.Receiver = SelectedLine.User;
+                      outcoming.Date = DateTime.Now;
+                      db.User.Find(CurrentUser.Id).SendedMessages.Add(outcoming);
+                      db.User.Find(SelectedLine.User.Id).ReceivedMessages.Add(outcoming);
+                      db.SaveChanges();
+                      IsExp = false;
+                      MessageBox.Show("Сообщение успешно отправлено пользователю " + outcoming.Receiver.Login);
+                  },
+
+                 //условие, при котором будет доступна команда
+                 (obj) => ((SelectedLine != null && CurrentUser != null && Message != null && Message.Length > 10))));
             }
         }
     }
