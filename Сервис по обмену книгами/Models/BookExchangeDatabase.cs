@@ -97,14 +97,14 @@
                 .IsUnicode(false);
 
             modelBuilder.Entity<User>()
-                .HasMany(e => e.SendedMessages)
-                .WithRequired(e => e.Sender)
+                .HasMany(e => e.ReceivedMessages)
+                .WithRequired(e => e.Receiver)
                 .HasForeignKey(e => e.Receiver_Id)
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<User>()
-                .HasMany(e => e.ReceivedMessages)
-                .WithRequired(e => e.Receiver)
+                .HasMany(e => e.SendedMessages)
+                .WithRequired(e => e.Sender)
                 .HasForeignKey(e => e.Sender_Id)
                 .WillCascadeOnDelete(false);
         }

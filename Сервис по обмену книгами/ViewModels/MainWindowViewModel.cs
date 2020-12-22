@@ -11,6 +11,7 @@ using System.Runtime.CompilerServices;
 using System.Collections.ObjectModel;
 using System.Data.Entity;
 using System.Windows;
+using Сервис_по_обмену_книгами.Views;
 
 namespace Сервис_по_обмену_книгами.ViewModels
 {
@@ -98,11 +99,31 @@ namespace Сервис_по_обмену_книгами.ViewModels
             }
         }
 
+        private ObservableCollection<Message> currentUserSendedMessages { get; set; }
+
+        public ObservableCollection<Message> CurrentUserSendedMessages
+        {
+            get { return currentUserSendedMessages; }
+            set
+            {
+                currentUserSendedMessages = value;
+                OnPropertyChanged("CurrentUserSendedMessages");
+            }
+        }
+
+        private ObservableCollection<Message> currentUserReceivedMessages { get; set; }
+
+        public ObservableCollection<Message> CurrentUserReceivedMessages
+        {
+            get { return currentUserReceivedMessages; }
+            set
+            {
+                currentUserReceivedMessages = value;
+                OnPropertyChanged("CurrentUserReceivedMessages");
+            }
+        }
         public ObservableCollection<Author> Authors { get; set; }
-
         public ObservableCollection<Genre> Genres { get; set; }
-
-        //public List<Genre> CurrentGenres { get; set; }
 
         private string logIn = "Войти";
         public string LogIn
@@ -112,6 +133,20 @@ namespace Сервис_по_обмену_книгами.ViewModels
             {
                 logIn = value;
                 OnPropertyChanged("LogIn");
+            }
+        }
+
+        private string tabPageIndex = "0";
+        public string TabPageIndex
+        {
+            get { return tabPageIndex; }
+            set
+            {
+                tabPageIndex = value;
+                SelectedBook = null;
+                SelectedLine = null;
+                SelectedMessage = null;
+                OnPropertyChanged("TabPageIndex");
             }
         }
 
@@ -125,7 +160,6 @@ namespace Сервис_по_обмену_книгами.ViewModels
                 OnPropertyChanged("UserName");
             }
         }
-
 
         private string upperLabel = "Вы вошли как: гость";
         public string UpperLabel
@@ -173,6 +207,30 @@ namespace Сервис_по_обмену_книгами.ViewModels
             }
         }
 
+        private Visibility sendedMessagesVisibility = Visibility.Visible;
+        public Visibility SendedMessagesVisibility
+        {
+            get { return sendedMessagesVisibility; }
+            set
+            {
+                sendedMessagesVisibility = value;
+                OnPropertyChanged("SendedMessagesVisibility");
+            }
+        }
+
+        private Visibility receivedMessagesVisibility = Visibility.Collapsed;
+        public Visibility ReceivedMessagesVisibility
+        {
+            get { return receivedMessagesVisibility; }
+            set
+            {
+                receivedMessagesVisibility = value;
+                OnPropertyChanged("ReceivedMessagesVisibility");
+            }
+        }
+
+
+
         private bool isExp = false;
         public bool IsExp
         {
@@ -193,6 +251,17 @@ namespace Сервис_по_обмену_книгами.ViewModels
             }
         }
 
+        private Message selectedMessage = null;
+        public Message SelectedMessage
+        {
+            get { return selectedMessage; }
+            set
+            {
+                selectedMessage = value;
+                OnPropertyChanged("SelectedMessage");
+            }
+        }
+
         private string message = null;
         public string Message
         {
@@ -201,6 +270,18 @@ namespace Сервис_по_обмену_книгами.ViewModels
             {
                 message = value;
                 OnPropertyChanged("Message");
+            }
+        }
+
+
+        private string comInc = "Отправленные сообщения";
+        public string ComInc
+        {
+            get { return comInc; }
+            set
+            {
+                comInc = value;
+                OnPropertyChanged("ComInc");
             }
         }
 
@@ -228,18 +309,6 @@ namespace Сервис_по_обмену_книгами.ViewModels
             }
         }
 
-        private ObservableCollection<User> users { get; set; }
-
-        public ObservableCollection<User> Users
-        {
-            get { return users; }
-            set
-            {
-                users = value;
-                OnPropertyChanged("Users");
-            }
-        }
-
         private ObservableCollection<Book> wishes { get; set; }
 
         public ObservableCollection<Book> Wishes
@@ -252,6 +321,18 @@ namespace Сервис_по_обмену_книгами.ViewModels
             }
         }
 
+        private ObservableCollection<User> users { get; set; }
+
+        public ObservableCollection<User> Users
+        {
+            get { return users; }
+            set
+            {
+                users = value;
+                OnPropertyChanged("Users");
+            }
+        }
+
         private User currentUser;
         public User CurrentUser
         {
@@ -260,11 +341,15 @@ namespace Сервис_по_обмену_книгами.ViewModels
             {
                 currentUser = value;
                 Flag = !Flag;
-               Uh = Filling(CurrentUser);
+                Uh = Filling(CurrentUser);
+                CurrentUserSendedMessages = null;
+                CurrentUserReceivedMessages = null;
                 if (currentUser != null)
                 {
                     LogIn = "Выйти";
                     UpperLabel = "Вы вошли как:" + currentUser.Login;
+                    CurrentUserSendedMessages = new ObservableCollection<Message>(value.SendedMessages);
+                    CurrentUserReceivedMessages = new ObservableCollection<Message>(value.ReceivedMessages);
                     Wishes = new ObservableCollection<Book>(value.Wishes);
                     Offers = new ObservableCollection<Book>(value.Offers);
                 }
@@ -297,7 +382,6 @@ namespace Сервис_по_обмену_книгами.ViewModels
             }
             return answer;
         }
-
         public ObservableCollection<UserHelp> Filling(User user)
         {
             if(user == null) { Uh = null; return null; }
@@ -341,8 +425,35 @@ namespace Сервис_по_обмену_книгами.ViewModels
             return uh;
         }
 
-        private RelayCommand bookSearch;
+        //private RelayCommand toLogIn;
+        //public RelayCommand ToLogIn
+        //{
+        //    get
+        //    {
+        //        return toLogIn ??
+        //          (toLogIn = new RelayCommand(obj =>
+        //          {
+        //              if (CurrentUser != null)
+        //              {
+        //                  CurrentUser = null;
+        //                  UpperLabel = "Вы вошли как: гость";
+        //                  LogIn = "Войти";
+        //                  Wishes = null;
+        //                  Offers = null;
+        //              }
+        //              else
+        //              {
+        //                  Login loginwindow = new Login(mv);
+        //                  loginwindow.ShowDialog();
+        //              }
+        //          },
 
+        //         //условие, при котором будет доступна команда
+        //         (obj) => ((authorTextBox != null && bookTitleTextBox != null))));
+        //    }
+        //}
+
+        private RelayCommand bookSearch;
         public RelayCommand BookSearch
         {
             get
@@ -359,7 +470,6 @@ namespace Сервис_по_обмену_книгами.ViewModels
         }
 
         private RelayCommand addBookOffers;
-
         public RelayCommand AddBookOffers
         {
             get
@@ -381,7 +491,6 @@ namespace Сервис_по_обмену_книгами.ViewModels
         }
 
         private RelayCommand addBookWishes;
-
         public RelayCommand AddBookWishes
         {
             get
@@ -402,9 +511,7 @@ namespace Сервис_по_обмену_книгами.ViewModels
             }
         }
 
-
         private RelayCommand deleteWish;
-
         public RelayCommand DeleteWish
         {
             get
@@ -425,7 +532,6 @@ namespace Сервис_по_обмену_книгами.ViewModels
         }
 
         private RelayCommand deleteOffer;
-
         public RelayCommand DeleteOffer
         {
             get
@@ -446,7 +552,6 @@ namespace Сервис_по_обмену_книгами.ViewModels
         }
 
         private RelayCommand writeMessage;
-
         public RelayCommand WriteMessage
         {
             get
@@ -460,12 +565,11 @@ namespace Сервис_по_обмену_книгами.ViewModels
                   },
 
                  //условие, при котором будет доступна команда
-                 (obj) => ((SelectedLine != null && CurrentUser != null))));
+                 (obj) => (((SelectedLine != null || SelectedMessage != null) && CurrentUser != null))));
             }
         }
 
         private RelayCommand sendMessage;
-
         public RelayCommand SendMessage
         {
             get
@@ -475,20 +579,65 @@ namespace Сервис_по_обмену_книгами.ViewModels
                   {
                       Message outcoming = new Message();
                       outcoming.Sender_Id = CurrentUser.Id;
-                      outcoming.Receiver_Id = SelectedLine.User.Id;
+                      if (SelectedLine != null)
+                      {
+                          outcoming.Receiver_Id = SelectedLine.User.Id;
+                          outcoming.Receiver = SelectedLine.User;
+                      }
+                      else
+                      {
+                          outcoming.Receiver_Id = SelectedMessage.Receiver_Id;
+                          outcoming.Receiver = SelectedMessage.Receiver;
+                      }
                       outcoming.Text = Message;
                       outcoming.Sender = CurrentUser;
-                      outcoming.Receiver = SelectedLine.User;
                       outcoming.Date = DateTime.Now;
+                      db.Message.Add(outcoming);
                       db.User.Find(CurrentUser.Id).SendedMessages.Add(outcoming);
-                      db.User.Find(SelectedLine.User.Id).ReceivedMessages.Add(outcoming);
+                      if (SelectedLine != null)
+                          db.User.Find(SelectedLine.User.Id).ReceivedMessages.Add(outcoming);
+                      else
+                          db.User.Find(SelectedMessage.Receiver_Id).ReceivedMessages.Add(outcoming);
                       db.SaveChanges();
                       IsExp = false;
-                      MessageBox.Show("Сообщение успешно отправлено пользователю " + outcoming.Receiver.Login);
+                      Message = null;
+                      if (SelectedLine != null)
+                      MessageBox.Show("Сообщение успешно отправлено пользователю " + SelectedLine.User.Login);
+                      else 
+                      MessageBox.Show("Сообщение успешно отправлено пользователю " + SelectedMessage.Receiver.Login);
+                      CurrentUserSendedMessages = new ObservableCollection<Message>(CurrentUser.SendedMessages);
+                      CurrentUserReceivedMessages = new ObservableCollection<Message>(CurrentUser.ReceivedMessages);
                   },
 
                  //условие, при котором будет доступна команда
-                 (obj) => ((SelectedLine != null && CurrentUser != null && Message != null && Message.Length > 10))));
+                 (obj) => (((SelectedLine != null || SelectedMessage != null) && CurrentUser != null && Message != null && Message.Length > 10))));
+            }
+        }
+
+        private RelayCommand swap;
+        public RelayCommand Swap
+        {
+            get
+            {
+                return swap ??
+                  (swap = new RelayCommand(obj =>
+                  {
+                  if (SendedMessagesVisibility == Visibility.Visible)
+                  {
+                      SendedMessagesVisibility = Visibility.Collapsed;
+                      ReceivedMessagesVisibility = Visibility.Visible;
+                      ComInc = "Входящие сообщения";
+                  }
+                      else
+                      {
+                          SendedMessagesVisibility = Visibility.Visible;
+                          ReceivedMessagesVisibility = Visibility.Collapsed;
+                          ComInc = "Отправленные сообщения";
+                      }
+                  },
+
+                 //условие, при котором будет доступна команда
+                 (obj) => ((CurrentUser != null))));
             }
         }
     }

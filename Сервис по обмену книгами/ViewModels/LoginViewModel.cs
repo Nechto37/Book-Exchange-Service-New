@@ -56,8 +56,8 @@ namespace Сервис_по_обмену_книгами.ViewModels
         }
         public LoginViewModel(MainWindowViewModel m)
         {
-            db = new BookExchangeDatabase();
-            Users = db.User.ToList();
+            // db = new BookExchangeDatabase();
+            Users = m.Users.ToList();
             Mv = m;
         }
 
